@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="text_size_title">18sp</dimen>
+    <dimen name="text_size_primary">16sp</dimen>
+    <dimen name="text_size_secondary">14sp</dimen>
+    <dimen name="text_size_small">12sp</dimen>
+    <dimen name="text_size_primary_big">20sp</dimen>
+    <dimen name="text_size_primary_huge">26sp</dimen>
+
+    <dimen name="simple_padding_tiny">2dp</dimen>
+    <dimen name="simple_padding_small">4dp</dimen>
+    <dimen name="simple_padding_medium">8dp</dimen>
+    <dimen name="simple_padding_largish">12dp</dimen>
+    <dimen name="simple_padding_large">16dp</dimen>
+    <dimen name="simple_padding_larger">32dp</dimen>
+    <dimen name="simple_padding_huge">56dp</dimen>
+
+    <dimen name="toolbar_progress_size">24dp</dimen>
+</resources>

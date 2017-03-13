@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="512dp"
+    android:height="512dp"
+    android:viewportHeight="512"
+    android:viewportWidth="512">
+
+    <path
+        android:name="Oval"
+        android:fillColor="@color/colorGrey"
+        android:pathData="M256,72 C309.572,72,353,115.428,353,169 C353,222.572,309.572,266,256,266
+C202.428,266,159,222.572,159,169 C159,115.428,202.428,72,256,72 Z"
+        android:strokeWidth="1" />
+    <path
+        android:name="Combined-Shape"
+        android:fillColor="@color/colorGrey"
+        android:pathData="M107,440 C107,357.157,173.71,290,256,290 C338.29,290,405,357.157,405,440
+L107,440 Z"
+        android:strokeWidth="1" />
+</vector>

@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Firebase IM</string>
+    <string name="error_google_sign_in">Can\'t sign in using Google</string>
+    <string name="placeholder">Placeholder</string>
+    <string name="empty_view_home">Oh oh! Looks like you\'re all alone</string>
+    <string name="button_invite">Invite</string>
+    <string name="hint_message">Type your message..</string>
+    <string name="error_loading_user">Couldn\'t load user</string>
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
+</resources>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="right"
+    android:orientation="vertical"
+    tools:ignore="RtlHardcoded">
+
+    <TextView
+        android:id="@+id/item_message_date_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/simple_padding_small"
+        android:layout_marginTop="@dimen/simple_padding_small"
+        android:gravity="center"
+        android:text="@string/placeholder"
+        android:textColor="@color/colorTextSecondary" />
+
+    <TextView
+        android:id="@+id/item_message_body_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/simple_padding_tiny"
+        android:layout_marginLeft="@dimen/simple_padding_huge"
+        android:layout_marginRight="@dimen/simple_padding_large"
+        android:layout_marginTop="@dimen/simple_padding_tiny"
+        android:background="@drawable/message_sent_chip"
+        android:clickable="true"
+        android:padding="@dimen/simple_padding_medium"
+        android:paddingEnd="@dimen/simple_padding_large"
+        android:paddingStart="@dimen/simple_padding_large"
+        android:text="@string/placeholder"
+        android:textColor="@color/colorWhite"
+        android:textSize="@dimen/text_size_secondary" />
+
+</LinearLayout>
