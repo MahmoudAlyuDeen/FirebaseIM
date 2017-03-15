@@ -1,5 +1,4 @@
 # Generated files
-bin/
 gen/
 out/
 
@@ -32,3 +31,7 @@ captures/
 libs/
 src/androidTest/
 src/test/
+/.idea/markdown-navigator.xml
+/.idea/markdown-navigator/
+/server/functions/node_modules/
+/server/.idea/workspace.xml

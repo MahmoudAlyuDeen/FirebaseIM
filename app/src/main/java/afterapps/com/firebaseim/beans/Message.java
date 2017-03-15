@@ -7,13 +7,15 @@ package afterapps.com.firebaseim.beans;
 public class Message {
 
     private long timestamp;
+    private long negatedTimestamp;
     private long dayTimeStamp;
     private String body;
     private String from;
     private String to;
 
-    public Message(long timestamp, long dayTimeStamp, String body, String from, String to) {
+    public Message(long timestamp, long negatedTimestamp, long dayTimeStamp, String body, String from, String to) {
         this.timestamp = timestamp;
+        this.negatedTimestamp = negatedTimestamp;
         this.dayTimeStamp = dayTimeStamp;
         this.body = body;
         this.from = from;
@@ -21,6 +23,10 @@ public class Message {
     }
 
     public Message() {
+    }
+
+    public long getNegatedTimestamp() {
+        return negatedTimestamp;
     }
 
     public long getDayTimeStamp() {

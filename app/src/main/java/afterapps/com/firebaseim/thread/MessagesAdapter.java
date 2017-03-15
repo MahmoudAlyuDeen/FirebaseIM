@@ -111,7 +111,7 @@ class MessagesAdapter extends FirebaseRecyclerAdapter<Message, MessagesAdapter.M
         void setMessage(Message message) {
             int viewType = MessagesAdapter.this.getItemViewType(getLayoutPosition());
             itemMessageBodyTextView.setText(message.getBody());
-            boolean shouldHideDate = viewType != VIEW_TYPE_SENT && viewType != VIEW_TYPE_RECEIVED;
+            boolean shouldHideDate = viewType == VIEW_TYPE_SENT || viewType == VIEW_TYPE_RECEIVED;
             itemMessageDateTextView.setVisibility(shouldHideDate ? GONE : VISIBLE);
             if (!shouldHideDate) {
                 itemMessageDateTextView.setText(getDatePretty(message.getDayTimeStamp(), false));

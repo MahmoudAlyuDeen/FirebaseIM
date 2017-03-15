@@ -12,8 +12,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-        <activity android:name=".home.MainActivity" />
         <activity android:name=".login.LoginActivity" />
+        <activity
+            android:name=".home.MainActivity"
+            android:launchMode="singleTop" />
+        <activity
+            android:name=".thread.ThreadActivity"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".login.SplashActivity"
             android:theme="@style/SplashTheme">
@@ -39,7 +44,6 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".thread.ThreadActivity"></activity>
     </application>
 
 </manifest>

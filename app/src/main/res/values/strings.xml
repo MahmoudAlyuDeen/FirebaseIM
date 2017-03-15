@@ -8,4 +8,6 @@
     <string name="error_loading_user">Couldn\'t load user</string>
     <string name="today">Today</string>
     <string name="yesterday">Yesterday</string>
+    <string name="empty_view_thread">Send the first message!</string>
+    <string name="error_sending_messages">Couldn\'t send message, please retry</string>
 </resources>

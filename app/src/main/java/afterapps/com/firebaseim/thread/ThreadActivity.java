@@ -5,9 +5,15 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputEditText;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -16,10 +22,16 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Calendar;
+import java.util.Date;
+
+import afterapps.com.firebaseim.BaseActivity;
 import afterapps.com.firebaseim.Constants;
 import afterapps.com.firebaseim.R;
+import afterapps.com.firebaseim.beans.Message;
 import afterapps.com.firebaseim.beans.User;
 import afterapps.com.firebaseim.login.LoginActivity;
 import afterapps.com.firebaseim.widgets.EmptyStateRecyclerView;
@@ -29,7 +41,10 @@ import butterknife.OnClick;
 import icepick.Icepick;
 import icepick.State;
 
-public class ThreadActivity extends AppCompatActivity implements ValueEventListener {
+import static android.view.View.INVISIBLE;
+import static android.view.View.VISIBLE;
+
+public class ThreadActivity extends BaseActivity implements TextWatcher {
 
     @BindView(R.id.activity_thread_toolbar)
     Toolbar toolbar;
@@ -39,15 +54,24 @@ public class ThreadActivity extends AppCompatActivity implements ValueEventListe
     FloatingActionButton sendFab;
     @BindView(R.id.activity_thread_input_edit_text)
     TextInputEditText inputEditText;
+    @BindView(R.id.activity_thread_empty_view)
+    TextView emptyView;
+    @BindView(R.id.activity_thread_editor_parent)
+    RelativeLayout editorParent;
+    @BindView(R.id.activity_thread_progress)
+    ProgressBar progress;
 
     private DatabaseReference mDatabase;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
 
     @State
-    String ownerUid;
-    @State
     String userUid;
+    @State
+    boolean emptyInput;
+
+    private User user;
+    private FirebaseUser owner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,34 +86,41 @@ public class ThreadActivity extends AppCompatActivity implements ValueEventListe
         if (savedInstanceState == null) {
             userUid = getIntent().getStringExtra(Constants.USER_ID_EXTRA);
         }
+        sendFab.requestFocus();
 
-        initializeUserListener();
+        loadUserDetails();
         initializeAuthListener();
+        initializeInteractionListeners();
     }
 
-    private void initializeUserListener() {
+    private void initializeInteractionListeners() {
+        inputEditText.addTextChangedListener(this);
+    }
+
+    private void loadUserDetails() {
         DatabaseReference userReference = mDatabase
                 .child("users")
                 .child(userUid);
 
-        userReference.addListenerForSingleValueEvent(this);
+        userReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                user = dataSnapshot.getValue(User.class);
+                initializeMessagesRecycler();
+                displayUserDetails();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Toast.makeText(ThreadActivity.this, R.string.error_loading_user, Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        });
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        Icepick.saveInstanceState(this, outState);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        mAuth.addAuthStateListener(mAuthListener);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
+    protected void onDestroy() {
+        super.onDestroy();
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
         }
@@ -100,12 +131,11 @@ public class ThreadActivity extends AppCompatActivity implements ValueEventListe
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
-                    ownerUid = user.getUid();
+                owner = firebaseAuth.getCurrentUser();
+                if (owner != null) {
                     initializeMessagesRecycler();
 
-                    Log.d("@@@@", "thread:signed_in:" + user.getUid());
+                    Log.d("@@@@", "thread:signed_in:" + owner.getUid());
                 } else {
                     Log.d("@@@@", "thread:signed_out");
                     Intent login = new Intent(ThreadActivity.this, LoginActivity.class);
@@ -114,33 +144,92 @@ public class ThreadActivity extends AppCompatActivity implements ValueEventListe
                 }
             }
         };
+        mAuth.addAuthStateListener(mAuthListener);
     }
 
     private void initializeMessagesRecycler() {
-        MessagesAdapter adapter = new MessagesAdapter(this, ownerUid, mDatabase.child("messages"));
-        //todo: figure out a proper structure to store and query messages
-        //todo: messages must by sorted by timestamp
-        //todo: keep in mind, you can perform operations server side!
+        if (user == null || owner == null) {
+            Log.d("@@@@", "initializeMessagesRecycler: User:" + user + " Owner:" + owner);
+            return;
+        }
+        Query messagesQuery = mDatabase
+                .child("messages")
+                .child(owner.getUid())
+                .child(user.getUid())
+                .orderByChild("negatedTimestamp");
+        MessagesAdapter adapter = new MessagesAdapter(this, owner.getUid(), messagesQuery);
+        messagesRecycler.setAdapter(null);
+        messagesRecycler.setAdapter(adapter);
+        messagesRecycler.setLayoutManager(
+                new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true));
+        messagesRecycler.setEmptyView(emptyView);
+        messagesRecycler.getAdapter().registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount) {
+                super.onItemRangeInserted(positionStart, itemCount);
+                messagesRecycler.smoothScrollToPosition(positionStart);
+            }
+        });
     }
 
     @OnClick(R.id.activity_thread_send_fab)
     public void onClick() {
-        //todo: send message
+        if (user == null || owner == null) {
+            Log.d("@@@@", "onSendClick: User:" + user + " Owner:" + owner);
+            return;
+        }
+        long timestamp = new Date().getTime();
+        long dayTimestamp = getDayTimestamp(timestamp);
+        String body = inputEditText.getText().toString().trim();
+        Message message = new Message(timestamp, -timestamp, dayTimestamp, body, owner.getUid(), user.getUid());
+        mDatabase
+                .child("uncommitted")
+                .child("messages")
+                .push()
+                .setValue(message);
+        inputEditText.setText("");
     }
 
     @Override
-    public void onDataChange(DataSnapshot dataSnapshot) {
-        User user = dataSnapshot.getValue(User.class);
-        displayUserDetails(user);
+    protected void displayLoadingState() {
+        //TransitionManager.beginDelayedTransition(editorParent);
+        progress.setVisibility(isLoading ? VISIBLE : INVISIBLE);
+        //displayInputState();
     }
 
-    private void displayUserDetails(User user) {
+    private void displayInputState() {
+        //inputEditText.setEnabled(!isLoading);
+        sendFab.setEnabled(!emptyInput && !isLoading);
+        //sendFab.setImageResource(isLoading ? R.color.colorTransparent : R.drawable.ic_send);
+    }
+
+    private long getDayTimestamp(long timestamp) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timestamp);
+        calendar.set(Calendar.MILLISECOND, 0);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        return calendar.getTimeInMillis();
+    }
+
+    private void displayUserDetails() {
         //todo: display name and profile picture in toolbar, WhatsApp style
     }
 
     @Override
-    public void onCancelled(DatabaseError databaseError) {
-        Toast.makeText(this, R.string.error_loading_user, Toast.LENGTH_SHORT).show();
-        finish();
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+        emptyInput = s.toString().trim().isEmpty();
+        displayInputState();
     }
 }

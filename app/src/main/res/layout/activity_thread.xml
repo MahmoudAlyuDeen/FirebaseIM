@@ -23,6 +23,16 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
+        <TextView
+            android:id="@+id/activity_thread_empty_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/activity_thread_editor_parent"
+            android:layout_marginEnd="@dimen/simple_padding_huge"
+            android:layout_marginStart="@dimen/simple_padding_huge"
+            android:gravity="center"
+            android:text="@string/empty_view_thread" />
+
         <afterapps.com.firebaseim.widgets.EmptyStateRecyclerView
             android:id="@+id/activity_thread_messages_recycler"
             android:layout_width="match_parent"
@@ -37,6 +47,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
+            android:background="@color/colorPrimary"
             android:padding="@dimen/simple_padding_small">
 
             <android.support.design.widget.FloatingActionButton
@@ -48,9 +59,15 @@
                 android:layout_margin="@dimen/simple_padding_small"
                 android:clickable="true"
                 android:src="@drawable/ic_send"
-                app:elevation="0dp"
                 android:theme="@style/SendFabTheme"
+                app:elevation="0dp"
                 app:fabSize="mini" />
+
+            <ProgressBar
+                android:id="@+id/activity_thread_progress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true" />
 
             <android.support.design.widget.TextInputEditText
                 android:id="@+id/activity_thread_input_edit_text"
@@ -63,7 +80,6 @@
                 android:hint="@string/hint_message"
                 android:inputType="textCapSentences|textAutoComplete|textAutoCorrect"
                 android:padding="@dimen/simple_padding_largish"
-                android:text="@string/placeholder"
                 android:textColor="@color/colorTextPrimary"
                 android:textSize="@dimen/text_size_secondary" />
 
