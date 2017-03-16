@@ -39,7 +39,7 @@
             android:layout_height="match_parent"
             android:layout_above="@+id/activity_thread_editor_parent"
             android:clipToPadding="false"
-            android:padding="@dimen/simple_padding_medium"
+            android:paddingBottom="@dimen/simple_padding_medium"
             tools:listitem="@layout/item_message_sent" />
 
         <RelativeLayout

@@ -8,15 +8,15 @@ public class Message {
 
     private long timestamp;
     private long negatedTimestamp;
-    private long dayTimeStamp;
+    private long dayTimestamp;
     private String body;
     private String from;
     private String to;
 
-    public Message(long timestamp, long negatedTimestamp, long dayTimeStamp, String body, String from, String to) {
+    public Message(long timestamp, long negatedTimestamp, long dayTimestamp, String body, String from, String to) {
         this.timestamp = timestamp;
         this.negatedTimestamp = negatedTimestamp;
-        this.dayTimeStamp = dayTimeStamp;
+        this.dayTimestamp = dayTimestamp;
         this.body = body;
         this.from = from;
         this.to = to;
@@ -25,24 +25,24 @@ public class Message {
     public Message() {
     }
 
+    public long getTimestamp() {
+        return timestamp;
+    }
+
     public long getNegatedTimestamp() {
         return negatedTimestamp;
-    }
-
-    public long getDayTimeStamp() {
-        return dayTimeStamp;
-    }
-
-    public String getFrom() {
-        return from;
     }
 
     public String getTo() {
         return to;
     }
 
-    public long getTimestamp() {
-        return timestamp;
+    public long getDayTimestamp() {
+        return dayTimestamp;
+    }
+
+    public String getFrom() {
+        return from;
     }
 
     public String getBody() {

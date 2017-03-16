@@ -167,7 +167,7 @@ public class ThreadActivity extends BaseActivity implements TextWatcher {
             @Override
             public void onItemRangeInserted(int positionStart, int itemCount) {
                 super.onItemRangeInserted(positionStart, itemCount);
-                messagesRecycler.smoothScrollToPosition(positionStart);
+                messagesRecycler.smoothScrollToPosition(0);
             }
         });
     }
@@ -181,17 +181,36 @@ public class ThreadActivity extends BaseActivity implements TextWatcher {
         long timestamp = new Date().getTime();
         long dayTimestamp = getDayTimestamp(timestamp);
         String body = inputEditText.getText().toString().trim();
-        Message message = new Message(timestamp, -timestamp, dayTimestamp, body, owner.getUid(), user.getUid());
+        String ownerUid = owner.getUid();
+        String userUid = user.getUid();
+        Message message =
+                new Message(timestamp, -timestamp, dayTimestamp, body, ownerUid, userUid);
         mDatabase
-                .child("uncommitted")
+                .child("notifications")
                 .child("messages")
                 .push()
                 .setValue(message);
+        mDatabase
+                .child("messages")
+                .child(userUid)
+                .child(ownerUid)
+                .push()
+                .setValue(message);
+        if (!userUid.equals(ownerUid)) {
+            mDatabase
+                    .child("messages")
+                    .child(ownerUid)
+                    .child(userUid)
+                    .push()
+                    .setValue(message);
+        }
         inputEditText.setText("");
     }
 
     @Override
     protected void displayLoadingState() {
+        //was considering a progress bar but firebase offline database makes it unnecessary
+
         //TransitionManager.beginDelayedTransition(editorParent);
         progress.setVisibility(isLoading ? VISIBLE : INVISIBLE);
         //displayInputState();
@@ -214,7 +233,9 @@ public class ThreadActivity extends BaseActivity implements TextWatcher {
     }
 
     private void displayUserDetails() {
-        //todo: display name and profile picture in toolbar, WhatsApp style
+        //todo[improvement]: maybe display the picture in the toolbar.. WhatsApp style
+        toolbar.setTitle(user.getDisplayName());
+        //toolbar.setSubtitle(user.getEmail());
     }
 
     @Override
