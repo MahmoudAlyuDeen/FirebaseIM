@@ -16,18 +16,18 @@ exports.sendNotification = functions.database.ref('/notifications/messages/{push
         }
 
         const getInstanceIdPromise = admin.database().ref(`/users/${receiverUid}/instanceId`).once('value');
-        const getReceiverUidPromise = admin.auth().getUser(receiverUid);
+        const getSenderUidPromise = admin.auth().getUser(senderUid);
 
-        return Promise.all([getInstanceIdPromise, getReceiverUidPromise]).then(results => {
+        return Promise.all([getInstanceIdPromise, getSenderUidPromise]).then(results => {
             const instanceId = results[0].val();
-            const receiver = results[1];
+            const sender = results[1];
             console.log('notifying ' + receiverUid + ' about ' + message.body + ' from ' + senderUid);
 
             const payload = {
                 notification: {
-                    title: receiver.displayName,
+                    title: sender.displayName,
                     body: message.body,
-                    icon: receiver.photoURL
+                    icon: sender.photoURL
                 }
             };
 

@@ -35,3 +35,4 @@ src/test/
 /.idea/markdown-navigator/
 /server/functions/node_modules/
 /server/.idea/workspace.xml
+/app/google-services.json
